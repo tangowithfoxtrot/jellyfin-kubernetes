@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin-deployment
+  labels:
+    app: jellyfin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      containers:
+      - name: jellyfin
+        image: lscr.io/linuxserver/jellyfin #:10.7.7-1-ls149 # latest stable version
+        ports:
+        - containerPort: 8096
+        imagePullPolicy: Always
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "America/Central"
+        - name: JELLYFIN_PublishedServerUrl
+          value: "0.0.0.0"
+        volumeMounts:
+        - mountPath: /mnt/jellyfin-data # path in the container
+          name: jellyfin-data
+          subPath: jellyfin-media
+      volumes:
+      - name: jellyfin-data # gets appended to the path below on the node
+        hostPath:
+          path: /home/$USER/kodekloud/pod-storage # path on node. 
+          # ends up being /home/$USER/kodekloud/pod-storage/jellyfin-data on node

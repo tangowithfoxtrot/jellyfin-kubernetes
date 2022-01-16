@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jellyfin-ingress
+  labels: 
+    app: jellyfin
+  annotations:
+    kubernetes.io/ingress.class: public
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt
+    # Interesting properties
+    # nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    # nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    # nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+spec:
+  tls:
+  - secretName: jellyfin-ssl-cert
+    hosts:
+    - jellyfin.yourdomain.com
+  rules:
+  - host: jellyfin.yourdomain.com # add to Cloudflare DNS
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: jellyfin-service
+            port:
+              number: 80
+

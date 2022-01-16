@@ -1,0 +1,5 @@
+Dockerfile
+.env*
+.venv/**
+__pycache__
+README.md
